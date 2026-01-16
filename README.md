@@ -4,9 +4,16 @@ A standalone OpenCode plugin that enables skills to bundle and manage their own 
 
 This allows skills to bring their own tools, resources, and prompts without requiring manual server configuration in `opencode.json`.
 
+## Why use this?
+
+- **🔌 Plug-and-Play Skills**: Skills bring their own tools. No need to manually register servers in your global config.
+- **🧠 Cleaner Context**: Tools are loaded on-demand only when the skill is active, keeping your agent's context window focused and efficient.
+- **📦 Team Portability**: Commit skills to your project repo; anyone with the plugin gets the tools automatically.
+- **⚡ Efficient Resources**: Servers start only when used and shut down automatically after 5 minutes of inactivity.
+
 ---
 
-## Features
+## Technical Features
 
 - **Skill-Embedded MCPs**: Configure MCP servers directly within skill definitions (markdown frontmatter or `mcp.json`).
 - **Zero Configuration**: Skills manage their own MCP connections; just load the skill and use the tools.
