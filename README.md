@@ -88,6 +88,10 @@ In OpenCode:
 skill(name="my-skill")
 ```
 
+**Pro Tip:** You don't always need to call the tool explicitly. Just ask for the skill by name in chat, and OpenCode will usually find and load it for you:
+
+> "Use the my-skill skill to do X"
+
 The plugin will load the skill and discover the capabilities of the embedded MCP server.
 
 ### 3. Use MCP Tools
