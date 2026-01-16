@@ -16,8 +16,17 @@
     "mcp",
     "skill"
   ],
-  "author": "",
+  "author": "keybrdist",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keybrdist/opencode-embedded-skill-mcp.git"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.1",
     "@opencode-ai/plugin": "^1.1.23",
