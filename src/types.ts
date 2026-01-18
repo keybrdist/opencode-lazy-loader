@@ -8,13 +8,14 @@
  * Environment variable formats:
  * 1. Object format (oh-my-opencode): env: { "KEY": "value" }
  * 2. Array format (OpenCode): env: ["KEY=value"]
+ * 3. Legacy field name: environment (same formats as env)
  */
 export interface McpServerConfig {
   command?: string | string[]
   args?: string[]
   env?: Record<string, string> | string[]
   /** @deprecated Use `env` instead */
-  environment?: Record<string, string>
+  environment?: Record<string, string> | string[]
 }
 
 export interface NormalizedCommand {

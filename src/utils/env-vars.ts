@@ -96,15 +96,14 @@ export function normalizeCommand(config: McpServerConfig): NormalizedCommand {
 }
 
 export function normalizeEnv(config: McpServerConfig): NormalizedEnv {
-  const envValue = config.env ?? config.environment
-  
-  if (!envValue) {
+  const envConfig = config.env ?? config.environment
+  if (!envConfig) {
     return { env: {} }
   }
 
-  if (Array.isArray(envValue)) {
+  if (Array.isArray(envConfig)) {
     const env: Record<string, string> = {}
-    for (const entry of envValue) {
+    for (const entry of envConfig) {
       const eqIndex = entry.indexOf('=')
       if (eqIndex > 0) {
         const key = entry.slice(0, eqIndex)
@@ -115,8 +114,8 @@ export function normalizeEnv(config: McpServerConfig): NormalizedEnv {
     return { env }
   }
 
-  if (typeof envValue === 'object') {
-    return { env: envValue }
+  if (typeof envConfig === 'object') {
+    return { env: envConfig }
   }
 
   return { env: {} }
