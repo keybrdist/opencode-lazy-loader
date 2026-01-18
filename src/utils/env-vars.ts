@@ -1,4 +1,4 @@
-import type { McpServerConfig, NormalizedCommand } from '../types.js'
+import type { McpServerConfig, NormalizedCommand, NormalizedEnv } from '../types.js'
 
 /**
  * Expand environment variables in a string
@@ -90,4 +90,29 @@ export function normalizeCommand(config: McpServerConfig): NormalizedCommand {
   }
 
   throw new Error('Invalid MCP command configuration: command must be a string or array')
+}
+
+export function normalizeEnv(config: McpServerConfig): NormalizedEnv {
+  if (!config.env) {
+    return { env: {} }
+  }
+
+  if (Array.isArray(config.env)) {
+    const env: Record<string, string> = {}
+    for (const entry of config.env) {
+      const eqIndex = entry.indexOf('=')
+      if (eqIndex > 0) {
+        const key = entry.slice(0, eqIndex)
+        const value = entry.slice(eqIndex + 1)
+        env[key] = value
+      }
+    }
+    return { env }
+  }
+
+  if (typeof config.env === 'object') {
+    return { env: config.env }
+  }
+
+  return { env: {} }
 }

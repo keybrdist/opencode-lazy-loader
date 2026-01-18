@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { normalizeCommand } from '../utils/env-vars.js'
+import { normalizeCommand, normalizeEnv } from '../utils/env-vars.js'
 import type { McpServerConfig } from '../types.js'
 
 describe('normalizeCommand', () => {
@@ -106,6 +106,101 @@ describe('normalizeCommand', () => {
 
       expect(result.command).toBe('npx')
       expect(result.args).toEqual(['-y', '@some/package'])
+    })
+  })
+})
+
+describe('normalizeEnv', () => {
+  describe('object format (oh-my-opencode style)', () => {
+    it('passes through object format unchanged', () => {
+      const config: McpServerConfig = {
+        command: 'node',
+        env: { API_KEY: 'secret', DEBUG: 'true' }
+      }
+
+      const result = normalizeEnv(config)
+
+      expect(result.env).toEqual({ API_KEY: 'secret', DEBUG: 'true' })
+    })
+
+    it('handles empty object', () => {
+      const config: McpServerConfig = {
+        command: 'node',
+        env: {}
+      }
+
+      const result = normalizeEnv(config)
+
+      expect(result.env).toEqual({})
+    })
+  })
+
+  describe('array format (OpenCode style)', () => {
+    it('converts array of KEY=value strings to object', () => {
+      const config: McpServerConfig = {
+        command: 'node',
+        env: ['API_KEY=secret', 'DEBUG=true']
+      }
+
+      const result = normalizeEnv(config)
+
+      expect(result.env).toEqual({ API_KEY: 'secret', DEBUG: 'true' })
+    })
+
+    it('handles values containing equals sign', () => {
+      const config: McpServerConfig = {
+        command: 'node',
+        env: ['CONNECTION_STRING=host=localhost;port=5432']
+      }
+
+      const result = normalizeEnv(config)
+
+      expect(result.env).toEqual({ CONNECTION_STRING: 'host=localhost;port=5432' })
+    })
+
+    it('handles empty array', () => {
+      const config: McpServerConfig = {
+        command: 'node',
+        env: []
+      }
+
+      const result = normalizeEnv(config)
+
+      expect(result.env).toEqual({})
+    })
+
+    it('skips malformed entries without equals sign', () => {
+      const config: McpServerConfig = {
+        command: 'node',
+        env: ['VALID=value', 'INVALID_NO_EQUALS', 'ALSO_VALID=123']
+      }
+
+      const result = normalizeEnv(config)
+
+      expect(result.env).toEqual({ VALID: 'value', ALSO_VALID: '123' })
+    })
+
+    it('handles empty value after equals sign', () => {
+      const config: McpServerConfig = {
+        command: 'node',
+        env: ['EMPTY_VALUE=']
+      }
+
+      const result = normalizeEnv(config)
+
+      expect(result.env).toEqual({ EMPTY_VALUE: '' })
+    })
+  })
+
+  describe('edge cases', () => {
+    it('returns empty object when env is undefined', () => {
+      const config: McpServerConfig = {
+        command: 'node'
+      }
+
+      const result = normalizeEnv(config)
+
+      expect(result.env).toEqual({})
     })
   })
 })

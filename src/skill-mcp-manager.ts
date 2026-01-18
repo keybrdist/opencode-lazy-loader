@@ -1,7 +1,7 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import type { McpClientInfo, McpContext, McpServerConfig } from './types.js'
-import { expandEnvVarsInObject, createCleanMcpEnvironment, normalizeCommand } from './utils/env-vars.js'
+import { expandEnvVarsInObject, createCleanMcpEnvironment, normalizeCommand, normalizeEnv } from './utils/env-vars.js'
 
 interface ManagedClient {
   client: Client
@@ -113,7 +113,8 @@ export function createSkillMcpManager(): SkillMcpManager {
     }
 
     const { command, args } = normalizeCommand(config)
-    const mergedEnv = createCleanMcpEnvironment(config.environment)
+    const { env } = normalizeEnv(config)
+    const mergedEnv = createCleanMcpEnvironment(env)
 
     registerProcessCleanup()
 

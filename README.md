@@ -127,12 +127,42 @@ Invokes an operation on a skill-embedded MCP server.
 
 ## Configuration Format
 
-The MCP configuration supports the standard format:
+The MCP configuration supports multiple formats for compatibility with both OpenCode and oh-my-opencode:
 
 ```typescript
 interface McpServerConfig {
-  command: string | string[];          // Command to execute (array recommended for args)
-  environment?: Record<string, string> // Environment variables
+  // Command formats (both supported):
+  command: string | string[]   // Array: ["npx", "-y", "@some/mcp"] or String: "npx"
+  args?: string[]              // Used with string command: ["-y", "@some/mcp"]
+  
+  // Environment variable formats (both supported):
+  env?: Record<string, string> | string[]  // Object: { "KEY": "val" } or Array: ["KEY=val"]
+}
+```
+
+### Examples
+
+**Object format for env (recommended):**
+```json
+{
+  "my-server": {
+    "command": "npx",
+    "args": ["-y", "@some/mcp-server"],
+    "env": {
+      "API_KEY": "${MY_API_KEY}",
+      "DEBUG": "true"
+    }
+  }
+}
+```
+
+**Array format for env (OpenCode style):**
+```json
+{
+  "my-server": {
+    "command": ["npx", "-y", "@some/mcp-server"],
+    "env": ["API_KEY=${MY_API_KEY}", "DEBUG=true"]
+  }
 }
 ```
 
