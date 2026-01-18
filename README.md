@@ -159,8 +159,8 @@ Here's a complete example of a skill with an embedded MCP server (from [`.openco
 ```markdown
 ---
 name: playwright-example
-description: Browser automation skill for web testing, scraping, and interaction.
-argument-hint: describe what you want to do (e.g., "take a screenshot of homepage")
+description: Browser automation skill for web testing, scraping, and interaction. Use for end-to-end testing, screenshots, and browser automation tasks.
+argument-hint: describe what you want to do (e.g., "take a screenshot of homepage", "test login flow", "fill out a form")
 mcp:
   playwright:
     command: ["npx", "-y", "@playwright/mcp@latest"]
