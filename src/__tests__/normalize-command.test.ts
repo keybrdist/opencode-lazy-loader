@@ -96,6 +96,16 @@ describe('normalizeCommand', () => {
       )
     })
 
+    it('throws error when command is empty array', () => {
+      const config: McpServerConfig = {
+        command: []
+      }
+
+      expect(() => normalizeCommand(config)).toThrow(
+        'Invalid MCP command configuration: command array must not be empty'
+      )
+    })
+
     it('ignores args field when command is array (OpenCode format takes precedence)', () => {
       const config: McpServerConfig = {
         command: ['npx', '-y', '@some/package'],
@@ -201,6 +211,31 @@ describe('normalizeEnv', () => {
       const result = normalizeEnv(config)
 
       expect(result.env).toEqual({})
+    })
+  })
+
+  describe('backward compatibility', () => {
+    it('supports deprecated environment field', () => {
+      const config: McpServerConfig = {
+        command: 'node',
+        environment: { LEGACY_KEY: 'legacy_value' }
+      }
+
+      const result = normalizeEnv(config)
+
+      expect(result.env).toEqual({ LEGACY_KEY: 'legacy_value' })
+    })
+
+    it('prefers env over deprecated environment when both present', () => {
+      const config: McpServerConfig = {
+        command: 'node',
+        env: { NEW_KEY: 'new_value' },
+        environment: { OLD_KEY: 'old_value' }
+      }
+
+      const result = normalizeEnv(config)
+
+      expect(result.env).toEqual({ NEW_KEY: 'new_value' })
     })
   })
 })

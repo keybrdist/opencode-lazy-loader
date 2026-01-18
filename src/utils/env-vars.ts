@@ -78,6 +78,9 @@ export function createCleanMcpEnvironment(
 
 export function normalizeCommand(config: McpServerConfig): NormalizedCommand {
   if (Array.isArray(config.command)) {
+    if (config.command.length === 0) {
+      throw new Error('Invalid MCP command configuration: command array must not be empty')
+    }
     const [cmd, ...cmdArgs] = config.command.map(String)
     return { command: cmd, args: cmdArgs }
   }
@@ -93,13 +96,15 @@ export function normalizeCommand(config: McpServerConfig): NormalizedCommand {
 }
 
 export function normalizeEnv(config: McpServerConfig): NormalizedEnv {
-  if (!config.env) {
+  const envValue = config.env ?? config.environment
+  
+  if (!envValue) {
     return { env: {} }
   }
 
-  if (Array.isArray(config.env)) {
+  if (Array.isArray(envValue)) {
     const env: Record<string, string> = {}
-    for (const entry of config.env) {
+    for (const entry of envValue) {
       const eqIndex = entry.indexOf('=')
       if (eqIndex > 0) {
         const key = entry.slice(0, eqIndex)
@@ -110,8 +115,8 @@ export function normalizeEnv(config: McpServerConfig): NormalizedEnv {
     return { env }
   }
 
-  if (typeof config.env === 'object') {
-    return { env: config.env }
+  if (typeof envValue === 'object') {
+    return { env: envValue }
   }
 
   return { env: {} }

@@ -13,6 +13,8 @@ export interface McpServerConfig {
   command?: string | string[]
   args?: string[]
   env?: Record<string, string> | string[]
+  /** @deprecated Use `env` instead */
+  environment?: Record<string, string>
 }
 
 export interface NormalizedCommand {
