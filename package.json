@@ -1,6 +1,6 @@
 {
   "name": "opencode-lazy-loader",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "OpenCode plugin for lazy-loading skill-embedded MCP servers",
   "type": "module",
   "main": "dist/index.js",

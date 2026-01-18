@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.3] - 2025-01-18
+
+### Fixed
+- Fix startup hang caused by `client.config.get()` not responding during plugin init
+- Read config file directly via `OPENCODE_CONFIG` env var for fast oh-my-opencode detection
+- Add 1s timeout fallback when using SDK for config check
+
+### Added
+- Debug logging via `OPENCODE_LAZY_LOADER_DEBUG=1` (writes to `/tmp/opencode-lazy-loader.log`)
+
 ## [1.0.2] - 2025-01-18
 
 ### Fixed
