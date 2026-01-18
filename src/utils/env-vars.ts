@@ -53,6 +53,9 @@ export function createCleanMcpEnvironment(
     'SHELL',
     'TERM',
     'NODE_ENV',
+    'TMPDIR',
+    'LANG',
+    'LC_ALL',
     'npm_config_registry',
     'npm_config_cache'
   ]
