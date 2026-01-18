@@ -1,14 +1,15 @@
 {
   "name": "opencode-lazy-loader",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "OpenCode plugin for lazy-loading skill-embedded MCP servers",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
-    "clean": "rm -rf dist"
+    "build": "npx tsc",
+    "watch": "npx tsc --watch",
+    "clean": "rm -rf dist",
+    "prepack": "npm run clean && npm run build"
   },
   "keywords": [
     "opencode",
