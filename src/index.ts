@@ -5,19 +5,25 @@ import { createSkillTool } from './tools/skill.js'
 import { createSkillMcpTool } from './tools/skill-mcp.js'
 import type { LoadedSkill } from './types.js'
 
-/**
- * OpenCode Embedded Skill MCP Plugin
- * 
- * Provides skill-embedded MCP support for OpenCode without requiring oh-my-opencode.
- * 
- * Features:
- * - Discovers skills from .opencode/skill/ (project) and ~/.config/opencode/skill/ (user)
- * - Parses MCP configurations from YAML frontmatter or mcp.json files
- * - Provides 'skill' tool to load skill instructions and discover MCP capabilities
- * - Provides 'skill_mcp' tool to invoke MCP operations (tools, resources, prompts)
- * - Manages MCP client connections with pooling, lazy initialization, and cleanup
- */
+function hasOhMyOpencode(plugins: string[]): boolean {
+  return plugins.some(p =>
+    p === 'oh-my-opencode' ||
+    p === '@code-yeongyu/oh-my-opencode' ||
+    p.endsWith('/oh-my-opencode')
+  )
+}
+
 export const OpenCodeEmbeddedSkillMcp: Plugin = async ({ client }) => {
+  if (process.env.OPENCODE_LAZY_LOADER_FORCE !== '1') {
+    try {
+      const { data: config } = await client.config.get()
+      if (config?.plugin && hasOhMyOpencode(config.plugin)) {
+        console.log('[opencode-lazy-loader] oh-my-opencode detected in config, auto-disabling to avoid conflicts')
+        return {}
+      }
+    } catch {
+    }
+  }
   const manager = createSkillMcpManager()
   let loadedSkills: LoadedSkill[] = []
   let currentSessionID: string | null = null

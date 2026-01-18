@@ -1,7 +1,7 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import type { McpClientInfo, McpContext, McpServerConfig } from './types.js'
-import { expandEnvVarsInObject, createCleanMcpEnvironment } from './utils/env-vars.js'
+import { expandEnvVarsInObject, createCleanMcpEnvironment, normalizeCommand, normalizeEnv } from './utils/env-vars.js'
 
 interface ManagedClient {
   client: Client
@@ -106,21 +106,15 @@ export function createSkillMcpManager(): SkillMcpManager {
       throw new Error(
         `MCP server "${info.serverName}" is missing required 'command' field.\n\n` +
         `The MCP configuration in skill "${info.skillName}" must specify a command to execute.\n\n` +
-        `Example:\n` +
-        `  mcp:\n` +
-        `    ${info.serverName}:\n` +
-        `      command: ["npx", "-y", "@some/mcp-server"]`
+        `Supported formats:\n` +
+        `  Format A (array):  command: ["npx", "-y", "@some/mcp-server"]\n` +
+        `  Format B (string): command: "npx", args: ["-y", "@some/mcp-server"]`
       )
     }
 
-    const commandValue = config.command
-    const commandParts = Array.isArray(commandValue)
-      ? commandValue.map(String)
-      : [String(commandValue)]
-
-    const command = commandParts[0]
-    const args = commandParts.slice(1)
-    const mergedEnv = createCleanMcpEnvironment(config.environment)
+    const { command, args } = normalizeCommand(config)
+    const { env } = normalizeEnv(config)
+    const mergedEnv = createCleanMcpEnvironment(env)
 
     registerProcessCleanup()
 

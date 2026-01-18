@@ -1,9 +1,29 @@
 /**
  * Configuration for an MCP server
+ *
+ * Command formats:
+ * 1. Array format: command: ["npx", "-y", "@some/mcp-server"]
+ * 2. String + args: command: "npx", args: ["-y", "@some/mcp-server"]
+ *
+ * Environment variable formats:
+ * 1. Object format (oh-my-opencode): env: { "KEY": "value" }
+ * 2. Array format (OpenCode): env: ["KEY=value"]
  */
 export interface McpServerConfig {
   command?: string | string[]
+  args?: string[]
+  env?: Record<string, string> | string[]
+  /** @deprecated Use `env` instead */
   environment?: Record<string, string>
+}
+
+export interface NormalizedCommand {
+  command: string
+  args: string[]
+}
+
+export interface NormalizedEnv {
+  env: Record<string, string>
 }
 
 /**

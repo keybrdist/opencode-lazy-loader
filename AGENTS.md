@@ -114,7 +114,7 @@ description: Does something useful
 mcp:
   server-name:
     command: ["npx", "-y", "@some/mcp-server"]
-    environment:
+    env:
       API_KEY: "${MY_API_KEY}"
 ---
 ```
@@ -150,6 +150,24 @@ mcp:
 | `utils/frontmatter.ts` | YAML frontmatter extraction |
 
 ## Key Implementation Details
+
+### oh-my-opencode Auto-Detection
+
+This plugin automatically disables itself when oh-my-opencode is detected to avoid conflicts (duplicate `skill` and `skill_mcp` tools).
+
+**Detection Logic:**
+1. Call `client.config.get()` via the OpenCode SDK to fetch the active config
+2. Check if `oh-my-opencode` is in the `plugin` array
+3. If found → return empty hooks (plugin does nothing)
+
+**User's Config Setup:**
+| Mode | Launch Command | Config File | Plugins |
+|------|----------------|-------------|---------|
+| Standard | `opencode` | `opencode.json` | `opencode-lazy-loader` (this plugin) |
+| OMO | `OPENCODE_CONFIG=~/.config/opencode/omo.json opencode` | `omo.json` | `oh-my-opencode` |
+
+**Developer Override:**
+Set `OPENCODE_LAZY_LOADER_FORCE=1` to force-enable the plugin even when oh-my-opencode is detected (for testing).
 
 ### Connection Pooling
 

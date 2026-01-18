@@ -1,4 +1,4 @@
-import type { McpServerConfig } from '../types.js'
+import type { McpServerConfig, NormalizedCommand, NormalizedEnv } from '../types.js'
 
 /**
  * Expand environment variables in a string
@@ -74,4 +74,50 @@ export function createCleanMcpEnvironment(
   }
   
   return baseEnv
+}
+
+export function normalizeCommand(config: McpServerConfig): NormalizedCommand {
+  if (Array.isArray(config.command)) {
+    if (config.command.length === 0) {
+      throw new Error('Invalid MCP command configuration: command array must not be empty')
+    }
+    const [cmd, ...cmdArgs] = config.command.map(String)
+    return { command: cmd, args: cmdArgs }
+  }
+
+  if (typeof config.command === 'string') {
+    return {
+      command: config.command,
+      args: config.args?.map(String) ?? []
+    }
+  }
+
+  throw new Error('Invalid MCP command configuration: command must be a string or array')
+}
+
+export function normalizeEnv(config: McpServerConfig): NormalizedEnv {
+  const envValue = config.env ?? config.environment
+  
+  if (!envValue) {
+    return { env: {} }
+  }
+
+  if (Array.isArray(envValue)) {
+    const env: Record<string, string> = {}
+    for (const entry of envValue) {
+      const eqIndex = entry.indexOf('=')
+      if (eqIndex > 0) {
+        const key = entry.slice(0, eqIndex)
+        const value = entry.slice(eqIndex + 1)
+        env[key] = value
+      }
+    }
+    return { env }
+  }
+
+  if (typeof envValue === 'object') {
+    return { env: envValue }
+  }
+
+  return { env: {} }
 }
