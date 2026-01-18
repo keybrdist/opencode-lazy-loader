@@ -48,6 +48,22 @@ Or install it locally:
 }
 ```
 
+## Quick Start
+
+This repo includes a working example skill. After installing the plugin, try:
+
+```
+skill(name="playwright-example")
+```
+
+Then use the embedded MCP:
+
+```
+skill_mcp(mcp_name="playwright", tool_name="browser_navigate", arguments='{"url": "https://example.com"}')
+```
+
+See [`.opencode/skill/playwright-example/SKILL.md`](.opencode/skill/playwright-example/SKILL.md) for the full example.
+
 ## Usage
 
 ### 1. Create a Skill with Embedded MCP
@@ -134,6 +150,38 @@ interface McpServerConfig {
   command: string | string[];          // Command to execute (array recommended for args)
   environment?: Record<string, string> // Environment variables
 }
+```
+
+## Example Skill
+
+Here's a complete example of a skill with an embedded MCP server (from [`.opencode/skill/playwright-example/SKILL.md`](.opencode/skill/playwright-example/SKILL.md)):
+
+```markdown
+---
+name: playwright-example
+description: Browser automation skill for web testing, scraping, and interaction.
+argument-hint: describe what you want to do (e.g., "take a screenshot of homepage")
+mcp:
+  playwright:
+    command: ["npx", "-y", "@playwright/mcp@latest"]
+---
+
+# Playwright Browser Automation
+
+This skill provides browser automation capabilities via the Playwright MCP server.
+
+## Available Operations
+
+- **Navigation**: Navigate to URLs, go back/forward, reload pages
+- **Screenshots**: Capture full page or element screenshots
+- **Interactions**: Click, type, select, hover, and other user interactions
+- **Forms**: Fill out forms, submit data, handle file uploads
+
+## Example Tasks
+
+- "Navigate to the login page and take a screenshot"
+- "Fill out the registration form with test data"
+- "Extract all product names from the catalog page"
 ```
 
 ## License
