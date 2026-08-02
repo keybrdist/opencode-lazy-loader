@@ -50,7 +50,8 @@ Or install it locally:
 
 ## Quick Start
 
-This repo includes a working example skill. After installing the plugin, try:
+This repository includes a working project skill. From a clone of the repository,
+try:
 
 ```
 skill(name="playwright-example")
@@ -62,7 +63,10 @@ Then use the embedded MCP:
 skill_mcp(mcp_name="playwright", tool_name="browser_navigate", arguments='{"url": "https://example.com"}')
 ```
 
-See [`.opencode/skills/playwright-example/SKILL.md`](.opencode/skills/playwright-example/SKILL.md) for the full example.
+The npm package does not install example skills into your OpenCode configuration.
+When installing from npm, copy
+[`.opencode/skills/playwright-example/SKILL.md`](.opencode/skills/playwright-example/SKILL.md)
+to one of the supported skill roots below before trying it.
 
 ## Usage
 
