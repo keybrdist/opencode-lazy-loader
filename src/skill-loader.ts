@@ -194,7 +194,7 @@ export async function loadSkillsFromDir(
  * Discover skills from opencode global directory (~/.config/opencode/skill/)
  */
 export async function discoverOpencodeGlobalSkills(): Promise<LoadedSkill[]> {
-  const opencodeSkillsDir = join(homedir(), '.config', 'opencode', 'skill')
+  const opencodeSkillsDir = join(homedir(), '.config', 'opencode', 'skills')
   return loadSkillsFromDir(opencodeSkillsDir, 'opencode')
 }
 
@@ -202,7 +202,7 @@ export async function discoverOpencodeGlobalSkills(): Promise<LoadedSkill[]> {
  * Discover skills from opencode project directory (.opencode/skill/)
  */
 export async function discoverOpencodeProjectSkills(): Promise<LoadedSkill[]> {
-  const opencodeProjectDir = join(process.cwd(), '.opencode', 'skill')
+  const opencodeProjectDir = join(process.cwd(), '.opencode', 'skills')
   return loadSkillsFromDir(opencodeProjectDir, 'opencode-project')
 }
 
