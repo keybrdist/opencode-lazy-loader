@@ -138,6 +138,6 @@ export const OpenCodeEmbeddedSkillMcp: Plugin = async ({ client }) => {
 export default OpenCodeEmbeddedSkillMcp
 
 // Re-export types for external use
-export type { LoadedSkill, McpServerConfig, SkillScope } from './types.js'
+export type { LoadedSkill, McpServerConfig, LocalMcpServerConfig, RemoteMcpServerConfig, SkillScope } from './types.js'
 export { discoverSkills } from './skill-loader.js'
 export { createSkillMcpManager } from './skill-mcp-manager.js'

@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs'
+import { promises as fs, Dirent } from 'fs'
 import { join, basename } from 'path'
 import { homedir } from 'os'
 import type { LoadedSkill, McpServerConfig, SkillScope, LazyContent } from './types.js'
@@ -45,12 +45,15 @@ export async function loadMcpJsonFromDir(
       return parsed.mcp as Record<string, McpServerConfig>
     }
 
-    // Support direct { serverName: { command: ... } } format
+    // Support direct { serverName: { command: ... } } or { serverName: { type: "remote", url: ... } } format
     if (parsed && typeof parsed === 'object' && !('mcpServers' in parsed) && !('mcp' in parsed)) {
       const hasCommandField = Object.values(parsed).some(
         (v) => v && typeof v === 'object' && 'command' in (v as Record<string, unknown>)
       )
-      if (hasCommandField) {
+      const hasRemoteConfig = Object.values(parsed).some(
+        (v) => v && typeof v === 'object' && 'type' in (v as Record<string, unknown>) && (v as Record<string, unknown>).type === 'remote'
+      )
+      if (hasCommandField || hasRemoteConfig) {
         return parsed as unknown as Record<string, McpServerConfig>
       }
     }
@@ -132,7 +135,7 @@ export async function loadSkillsFromDir(
   skillsDir: string,
   scope: SkillScope
 ): Promise<LoadedSkill[]> {
-  const entries = await fs.readdir(skillsDir, { withFileTypes: true }).catch(() => [])
+  const entries: Dirent<string>[] = await fs.readdir(skillsDir, { withFileTypes: true }).catch(() => [])
   const skills: LoadedSkill[] = []
 
   for (const entry of entries) {
@@ -191,7 +194,7 @@ export async function loadSkillsFromDir(
 }
 
 /**
- * Discover skills from opencode global directory (~/.config/opencode/skill/)
+ * Discover skills from opencode global directory (~/.config/opencode/skills/)
  */
 export async function discoverOpencodeGlobalSkills(): Promise<LoadedSkill[]> {
   const opencodeSkillsDir = join(homedir(), '.config', 'opencode', 'skills')
@@ -199,7 +202,7 @@ export async function discoverOpencodeGlobalSkills(): Promise<LoadedSkill[]> {
 }
 
 /**
- * Discover skills from opencode project directory (.opencode/skill/)
+ * Discover skills from opencode project directory (.opencode/skills/)
  */
 export async function discoverOpencodeProjectSkills(): Promise<LoadedSkill[]> {
   const opencodeProjectDir = join(process.cwd(), '.opencode', 'skills')

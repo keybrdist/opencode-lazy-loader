@@ -185,8 +185,8 @@ Set `OPENCODE_LAZY_LOADER_FORCE=1` to force-enable the plugin even when oh-my-op
 
 | Priority | Location | Scope |
 |----------|----------|-------|
-| 1 (highest) | `.opencode/skill/` | Project-specific |
-| 2 | `~/.config/opencode/skill/` | User global |
+| 1 (highest) | `.opencode/skills/` | Project-specific |
+| 2 | `~/.config/opencode/skills/` | User global |
 
 Project skills override global skills with the same name.
 
@@ -217,7 +217,7 @@ Before releasing, verify:
 | OpenCode hangs on startup | Missing `dist/` in npm package | Run `npm run build` before publish |
 | `ERR_MODULE_NOT_FOUND` | Package published without build | Ensure `prepack` script exists |
 | MCP connection fails | Command not found | Check PATH, ensure package installed |
-| Skills not discovered | Wrong directory | Check `.opencode/skill/` or `~/.config/opencode/skill/` |
+| Skills not discovered | Wrong directory | Check `.opencode/skills/` or `~/.config/opencode/skills/` |
 | Env vars not expanded | Wrong syntax | Use `${VAR}` not `$VAR` |
 
 ## Contributing

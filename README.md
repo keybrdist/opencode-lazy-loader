@@ -2,8 +2,6 @@
 
 This is the OpenCode plugin that lazy-loads skill-embedded MCP servers. It lets skills bundle their own MCP servers so they can be loaded on-demand instead of being configured globally.
 
-Note: This package was renamed from `opencode-embedded-skill-mcp` to `opencode-lazy-loader`. If you still have the old package, upgrade to the new name.
-
 This is a standalone OpenCode plugin that enables skills to bundle and manage their own [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) servers, then lazy-load them on demand.
 
 This allows skills to bring their own tools, resources, and prompts without requiring manual server configuration in `opencode.json`.
@@ -30,13 +28,11 @@ This allows skills to bring their own tools, resources, and prompts without requ
 
 ## Installation
 
-Deprecation notice: The package was renamed from `opencode-embedded-skill-mcp` to `opencode-lazy-loader`. If you installed the old name, update to the new package.
-
 Add the plugin to your `opencode.json`:
 
 ```json
 {
-  "plugin": ["opencode-lazy-loader"]
+  "plugin": ["@orionpax/opencode-lazy-mcp"]
 }
 ```
 
@@ -44,7 +40,7 @@ Or install it locally:
 
 ```json
 {
-  "plugin": ["./path/to/opencode-lazy-loader"]
+  "plugin": ["./path/to/@orionpax/opencode-lazy-mcp"]
 }
 ```
 
@@ -62,7 +58,7 @@ Then use the embedded MCP:
 skill_mcp(mcp_name="playwright", tool_name="browser_navigate", arguments='{"url": "https://example.com"}')
 ```
 
-See [`.opencode/skill/playwright-example/SKILL.md`](.opencode/skill/playwright-example/SKILL.md) for the full example.
+See [`.opencode/skills/playwright-example/SKILL.md`](.opencode/skills/playwright-example/SKILL.md) for the full example.
 
 ## Usage
 
@@ -70,7 +66,7 @@ See [`.opencode/skill/playwright-example/SKILL.md`](.opencode/skill/playwright-e
 
 You can define MCP servers in the skill's YAML frontmatter:
 
-**`~/.config/opencode/skill/my-skill/SKILL.md`**
+**`~/.config/opencode/skills/my-skill/SKILL.md`**
 
 ```markdown
 ---
@@ -88,7 +84,7 @@ This skill provides browser automation tools via the `playwright` MCP.
 
 Alternatively, place an `mcp.json` file in the skill directory:
 
-**`~/.config/opencode/skill/browser-automation/mcp.json`**
+**`~/.config/opencode/skills/browser-automation/mcp.json`**
 
 ```json
 {
@@ -184,7 +180,7 @@ interface McpServerConfig {
 
 ## Example Skill
 
-Here's a complete example of a skill with an embedded MCP server (from [`.opencode/skill/playwright-example/SKILL.md`](.opencode/skill/playwright-example/SKILL.md)):
+Here's a complete example of a skill with an embedded MCP server (from [`.opencode/skills/playwright-example/SKILL.md`](.opencode/skills/playwright-example/SKILL.md)):
 
 ```markdown
 ---

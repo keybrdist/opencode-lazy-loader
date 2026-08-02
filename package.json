@@ -1,7 +1,7 @@
 {
-  "name": "opencode-lazy-loader",
+  "name": "@orionpax/opencode-lazy-mcp",
   "version": "1.0.3",
-  "description": "OpenCode plugin for lazy-loading skill-embedded MCP servers",
+  "description": "OpenCode plugin for skill-embedded MCP support - skills can define their own MCP servers that are automatically discovered and lazily loaded",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,8 +19,7 @@
     "watch": "npx tsc --watch",
     "clean": "rm -rf dist",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "prepack": "npm run clean && npm run build"
+    "test:watch": "vitest"
   },
   "keywords": [
     "opencode",
@@ -28,11 +27,11 @@
     "mcp",
     "skill"
   ],
-  "author": "keybrdist",
+  "author": "orionpax",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/keybrdist/opencode-lazy-loader.git"
+    "url": "git+https://github.com/orionpax/opencode-lazy-mcp.git"
   },
   "files": [
     "dist",

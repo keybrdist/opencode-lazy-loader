@@ -1,11 +1,13 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
-import type { McpClientInfo, McpContext, McpServerConfig } from './types.js'
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js'
+import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
+import type { McpClientInfo, McpContext, McpServerConfig, RemoteMcpServerConfig, LocalMcpServerConfig } from './types.js'
 import { expandEnvVarsInObject, createCleanMcpEnvironment, normalizeCommand, normalizeEnv } from './utils/env-vars.js'
 
 interface ManagedClient {
   client: Client
-  transport: StdioClientTransport
+  transport: Transport
   skillName: string
   lastUsedAt: number
 }
@@ -96,12 +98,80 @@ export function createSkillMcpManager(): SkillMcpManager {
     }
   }
 
+  const isRemoteConfig = (config: McpServerConfig): config is RemoteMcpServerConfig => {
+    return config.type === 'remote'
+  }
+
   const createClient = async (
     info: McpClientInfo,
     config: McpServerConfig
   ): Promise<Client> => {
     const key = getClientKey(info)
+    registerProcessCleanup()
 
+    const client = new Client(
+      { name: `skill-mcp-${info.skillName}-${info.serverName}`, version: '1.0.0' },
+      { capabilities: {} }
+    )
+
+    let transport: Transport
+
+    if (isRemoteConfig(config)) {
+      transport = await createRemoteTransport(info, config, client)
+    } else {
+      transport = await createLocalTransport(info, config)
+    }
+
+    try {
+      await client.connect(transport)
+    } catch (error) {
+      try {
+        await transport.close()
+      } catch {
+        // Ignore cleanup errors
+      }
+
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      if (isRemoteConfig(config)) {
+        throw new Error(
+          `Failed to connect to remote MCP server "${info.serverName}".\n\n` +
+          `URL: ${config.url}\n` +
+          `Reason: ${errorMessage}\n\n` +
+          `Hints:\n` +
+          `  - Verify the server URL is correct and reachable\n` +
+          `  - Check if authentication headers or OAuth are required\n` +
+          `  - Ensure the remote server supports MCP Streamable HTTP transport`
+        )
+      } else {
+        const cmd = normalizeCommand(config)
+        throw new Error(
+          `Failed to connect to MCP server "${info.serverName}".\n\n` +
+          `Command: ${cmd.command} ${cmd.args.join(' ')}\n` +
+          `Reason: ${errorMessage}\n\n` +
+          `Hints:\n` +
+          `  - Ensure the command is installed and available in PATH\n` +
+          `  - Check if the MCP server package exists\n` +
+          `  - Verify the args are correct for this server`
+        )
+      }
+    }
+
+    clients.set(key, {
+      client,
+      transport,
+      skillName: info.skillName,
+      lastUsedAt: Date.now()
+    })
+
+    startCleanupTimer()
+
+    return client
+  }
+
+  const createLocalTransport = async (
+    info: McpClientInfo,
+    config: LocalMcpServerConfig
+  ): Promise<StdioClientTransport> => {
     if (!config.command) {
       throw new Error(
         `MCP server "${info.serverName}" is missing required 'command' field.\n\n` +
@@ -116,51 +186,37 @@ export function createSkillMcpManager(): SkillMcpManager {
     const { env } = normalizeEnv(config)
     const mergedEnv = createCleanMcpEnvironment(env)
 
-    registerProcessCleanup()
-
-    const transport = new StdioClientTransport({
+    return new StdioClientTransport({
       command,
       args,
       env: mergedEnv,
       stderr: 'ignore'
     })
+  }
 
-    const client = new Client(
-      { name: `skill-mcp-${info.skillName}-${info.serverName}`, version: '1.0.0' },
-      { capabilities: {} }
-    )
-
+  const createRemoteTransport = async (
+    info: McpClientInfo,
+    config: RemoteMcpServerConfig,
+    _client: Client
+  ): Promise<StreamableHTTPClientTransport> => {
+    let url: URL
     try {
-      await client.connect(transport)
-    } catch (error) {
-      try {
-        await transport.close()
-      } catch {
-        // Ignore cleanup errors
-      }
-
-      const errorMessage = error instanceof Error ? error.message : String(error)
+      url = new URL(config.url)
+    } catch {
       throw new Error(
-        `Failed to connect to MCP server "${info.serverName}".\n\n` +
-        `Command: ${command} ${args.join(' ')}\n` +
-        `Reason: ${errorMessage}\n\n` +
-        `Hints:\n` +
-        `  - Ensure the command is installed and available in PATH\n` +
-        `  - Check if the MCP server package exists\n` +
-        `  - Verify the args are correct for this server`
+        `MCP server "${info.serverName}" has an invalid URL: ${config.url}\n\n` +
+        `The URL must be a valid HTTP or HTTPS URL.`
       )
     }
 
-    clients.set(key, {
-      client,
-      transport,
-      skillName: info.skillName,
-      lastUsedAt: Date.now()
+    const requestInit: RequestInit = {}
+    if (config.headers && Object.keys(config.headers).length > 0) {
+      requestInit.headers = expandEnvVarsInObject(config.headers)
+    }
+
+    return new StreamableHTTPClientTransport(url, {
+      requestInit: Object.keys(requestInit).length > 0 ? requestInit : undefined
     })
-
-    startCleanupTimer()
-
-    return client
   }
 
   const getOrCreateClient = async (
