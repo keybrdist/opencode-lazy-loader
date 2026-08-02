@@ -30,7 +30,7 @@ export interface NormalizedEnv {
 /**
  * Skill scope - where the skill was loaded from
  */
-export type SkillScope = 'opencode' | 'opencode-project'
+export type SkillScope = 'opencode' | 'opencode-project' | 'agents' | 'agents-project' | 'claude' | 'claude-project'
 
 /**
  * Lazy content loader for skill templates

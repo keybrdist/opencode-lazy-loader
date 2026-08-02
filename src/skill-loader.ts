@@ -208,16 +208,16 @@ export async function discoverOpencodeProjectSkills(): Promise<LoadedSkill[]> {
 
 async function discoverNativeGlobalSkills(): Promise<LoadedSkill[][]> {
   return Promise.all([
-    loadSkillsFromDir(join(homedir(), '.agents', 'skills'), 'opencode'),
-    loadSkillsFromDir(join(homedir(), '.claude', 'skills'), 'opencode'),
+    loadSkillsFromDir(join(homedir(), '.agents', 'skills'), 'agents'),
+    loadSkillsFromDir(join(homedir(), '.claude', 'skills'), 'claude'),
     discoverOpencodeGlobalSkills()
   ])
 }
 
 async function discoverNativeProjectSkills(): Promise<LoadedSkill[][]> {
   return Promise.all([
-    loadSkillsFromDir(join(process.cwd(), '.agents', 'skills'), 'opencode-project'),
-    loadSkillsFromDir(join(process.cwd(), '.claude', 'skills'), 'opencode-project'),
+    loadSkillsFromDir(join(process.cwd(), '.agents', 'skills'), 'agents-project'),
+    loadSkillsFromDir(join(process.cwd(), '.claude', 'skills'), 'claude-project'),
     discoverOpencodeProjectSkills()
   ])
 }
