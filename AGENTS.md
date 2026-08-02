@@ -36,8 +36,8 @@ src/
 ### Data Flow
 
 ```
-1. Plugin loads → discoverSkills() scans filesystem
-2. User calls skill(name="X") → loads instructions, connects MCP servers
+1. Plugin loads → discoverSkills() scans OpenCode's native skill roots
+2. OpenCode's native skill tool loads instructions
 3. User calls skill_mcp(mcp_name="Y", tool_name="Z") → invokes MCP tool
 4. Session ends → disconnectSession() cleans up connections
 5. Idle timeout (5min) → automatic connection cleanup
@@ -144,7 +144,7 @@ mcp:
 | `types.ts` | All TypeScript interfaces - single source of truth |
 | `skill-loader.ts` | Filesystem scanning, SKILL.md parsing, mcp.json loading |
 | `skill-mcp-manager.ts` | Client pooling, connection lifecycle, idle cleanup |
-| `tools/skill.ts` | `skill` tool - formats skill content and MCP capabilities |
+| `tools/skill.ts` | Legacy formatter; OpenCode's native skill tool is used at runtime |
 | `tools/skill-mcp.ts` | `skill_mcp` tool - validates params, routes to MCP operations |
 | `utils/env-vars.ts` | `${VAR}` expansion, clean environment creation |
 | `utils/frontmatter.ts` | YAML frontmatter extraction |
@@ -153,7 +153,7 @@ mcp:
 
 ### oh-my-opencode Auto-Detection
 
-This plugin automatically disables itself when oh-my-opencode is detected to avoid conflicts (duplicate `skill` and `skill_mcp` tools).
+This plugin automatically disables itself when oh-my-opencode is detected to avoid a duplicate `skill_mcp` tool.
 
 **Detection Logic:**
 1. Call `client.config.get()` via the OpenCode SDK to fetch the active config
@@ -185,8 +185,12 @@ Set `OPENCODE_LAZY_LOADER_FORCE=1` to force-enable the plugin even when oh-my-op
 
 | Priority | Location | Scope |
 |----------|----------|-------|
-| 1 (highest) | `.opencode/skill/` | Project-specific |
-| 2 | `~/.config/opencode/skill/` | User global |
+| 1 (highest) | `.opencode/skills/` | Project-specific |
+| 2 | `.claude/skills/` | Project-specific |
+| 3 | `.agents/skills/` | Project-specific |
+| 4 | `~/.config/opencode/skills/` | User global |
+| 5 | `~/.claude/skills/` | User global |
+| 6 | `~/.agents/skills/` | User global |
 
 Project skills override global skills with the same name.
 
@@ -217,7 +221,7 @@ Before releasing, verify:
 | OpenCode hangs on startup | Missing `dist/` in npm package | Run `npm run build` before publish |
 | `ERR_MODULE_NOT_FOUND` | Package published without build | Ensure `prepack` script exists |
 | MCP connection fails | Command not found | Check PATH, ensure package installed |
-| Skills not discovered | Wrong directory | Check `.opencode/skill/` or `~/.config/opencode/skill/` |
+| Skills not discovered | Wrong directory | Check `.opencode/skills/` or `~/.config/opencode/skills/` |
 | Env vars not expanded | Wrong syntax | Use `${VAR}` not `$VAR` |
 
 ## Contributing

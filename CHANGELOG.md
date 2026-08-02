@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.4] - 2026-08-01
+
+### Fixed
+- Discover OpenCode skills from the standard plural `skills` directories
+- Preserve OpenCode's native `skill` tool instead of replacing it
+- Discover embedded MCP definitions from native `.agents/skills` and `.claude/skills` roots
+
+### Changed
+- Move the bundled Playwright example to `.opencode/skills/`
+
 ## [1.0.3] - 2025-01-18
 
 ### Fixed

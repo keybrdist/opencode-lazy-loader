@@ -62,15 +62,20 @@ Then use the embedded MCP:
 skill_mcp(mcp_name="playwright", tool_name="browser_navigate", arguments='{"url": "https://example.com"}')
 ```
 
-See [`.opencode/skill/playwright-example/SKILL.md`](.opencode/skill/playwright-example/SKILL.md) for the full example.
+See [`.opencode/skills/playwright-example/SKILL.md`](.opencode/skills/playwright-example/SKILL.md) for the full example.
 
 ## Usage
+
+The plugin does not replace OpenCode's native `skill` tool. It scans OpenCode's native skill roots to discover embedded MCP definitions, then exposes those servers through `skill_mcp`.
+
+Project roots: `.opencode/skills`, `.claude/skills`, `.agents/skills`
+Global roots: `~/.config/opencode/skills`, `~/.claude/skills`, `~/.agents/skills`
 
 ### 1. Create a Skill with Embedded MCP
 
 You can define MCP servers in the skill's YAML frontmatter:
 
-**`~/.config/opencode/skill/my-skill/SKILL.md`**
+**`~/.config/opencode/skills/my-skill/SKILL.md`**
 
 ```markdown
 ---
@@ -88,7 +93,7 @@ This skill provides browser automation tools via the `playwright` MCP.
 
 Alternatively, place an `mcp.json` file in the skill directory:
 
-**`~/.config/opencode/skill/browser-automation/mcp.json`**
+**`~/.config/opencode/skills/browser-automation/mcp.json`**
 
 ```json
 {
@@ -102,7 +107,7 @@ Alternatively, place an `mcp.json` file in the skill directory:
 
 ### 2. Load the Skill
 
-In OpenCode:
+Use OpenCode's native skill tool:
 
 ```
 skill(name="browser-automation")
@@ -112,7 +117,7 @@ skill(name="browser-automation")
 
 > "Use the browser-automation skill to take a screenshot of google.com"
 
-The plugin will load the skill and discover the capabilities of the embedded MCP server.
+The plugin discovers the embedded MCP configuration when OpenCode starts.
 
 ### 3. Use MCP Tools
 
@@ -123,12 +128,6 @@ skill_mcp(mcp_name="playwright", tool_name="screenshot", arguments='{"url": "htt
 ```
 
 ## Tools Provided
-
-### `skill`
-
-Loads a skill and displays its instructions along with any available MCP capabilities (tools, resources, prompts).
-
-- **name**: The name of the skill to load.
 
 ### `skill_mcp`
 
@@ -184,7 +183,7 @@ interface McpServerConfig {
 
 ## Example Skill
 
-Here's a complete example of a skill with an embedded MCP server (from [`.opencode/skill/playwright-example/SKILL.md`](.opencode/skill/playwright-example/SKILL.md)):
+Here's a complete example of a skill with an embedded MCP server (from [`.opencode/skills/playwright-example/SKILL.md`](.opencode/skills/playwright-example/SKILL.md)):
 
 ```markdown
 ---
