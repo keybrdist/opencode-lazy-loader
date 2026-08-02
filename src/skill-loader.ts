@@ -191,7 +191,7 @@ export async function loadSkillsFromDir(
 }
 
 /**
- * Discover skills from opencode global directory (~/.config/opencode/skill/)
+ * Discover skills from OpenCode's global directory (~/.config/opencode/skills/)
  */
 export async function discoverOpencodeGlobalSkills(): Promise<LoadedSkill[]> {
   const opencodeSkillsDir = join(homedir(), '.config', 'opencode', 'skills')
@@ -199,11 +199,27 @@ export async function discoverOpencodeGlobalSkills(): Promise<LoadedSkill[]> {
 }
 
 /**
- * Discover skills from opencode project directory (.opencode/skill/)
+ * Discover skills from OpenCode's project directory (.opencode/skills/)
  */
 export async function discoverOpencodeProjectSkills(): Promise<LoadedSkill[]> {
   const opencodeProjectDir = join(process.cwd(), '.opencode', 'skills')
   return loadSkillsFromDir(opencodeProjectDir, 'opencode-project')
+}
+
+async function discoverNativeGlobalSkills(): Promise<LoadedSkill[][]> {
+  return Promise.all([
+    loadSkillsFromDir(join(homedir(), '.agents', 'skills'), 'opencode'),
+    loadSkillsFromDir(join(homedir(), '.claude', 'skills'), 'opencode'),
+    discoverOpencodeGlobalSkills()
+  ])
+}
+
+async function discoverNativeProjectSkills(): Promise<LoadedSkill[][]> {
+  return Promise.all([
+    loadSkillsFromDir(join(process.cwd(), '.agents', 'skills'), 'opencode-project'),
+    loadSkillsFromDir(join(process.cwd(), '.claude', 'skills'), 'opencode-project'),
+    discoverOpencodeProjectSkills()
+  ])
 }
 
 /**
@@ -211,22 +227,17 @@ export async function discoverOpencodeProjectSkills(): Promise<LoadedSkill[]> {
  * Priority: project > global
  */
 export async function discoverSkills(): Promise<LoadedSkill[]> {
-  const [projectSkills, globalSkills] = await Promise.all([
-    discoverOpencodeProjectSkills(),
-    discoverOpencodeGlobalSkills()
+  const [globalGroups, projectGroups] = await Promise.all([
+    discoverNativeGlobalSkills(),
+    discoverNativeProjectSkills()
   ])
 
-  // Project skills take priority - dedupe by name
   const skillMap = new Map<string, LoadedSkill>()
-  
-  // Add global skills first
-  for (const skill of globalSkills) {
-    skillMap.set(skill.name, skill)
-  }
-  
-  // Project skills override global
-  for (const skill of projectSkills) {
-    skillMap.set(skill.name, skill)
+
+  for (const group of [...globalGroups, ...projectGroups]) {
+    for (const skill of group) {
+      skillMap.set(skill.name, skill)
+    }
   }
 
   return Array.from(skillMap.values())

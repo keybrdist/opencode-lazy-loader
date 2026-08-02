@@ -2,7 +2,6 @@ import type { Plugin } from '@opencode-ai/plugin'
 import { appendFileSync, readFileSync, existsSync } from 'fs'
 import { createSkillMcpManager } from './skill-mcp-manager.js'
 import { discoverSkills } from './skill-loader.js'
-import { createSkillTool } from './tools/skill.js'
 import { createSkillMcpTool } from './tools/skill-mcp.js'
 import type { LoadedSkill } from './types.js'
 
@@ -120,11 +119,6 @@ export const OpenCodeEmbeddedSkillMcp: Plugin = async ({ client }) => {
 
     // Register tools
     tool: {
-      skill: createSkillTool({
-        skills: loadedSkills,
-        mcpManager: manager,
-        getSessionID: () => currentSessionID || 'unknown'
-      }),
       skill_mcp: createSkillMcpTool({
         manager,
         getLoadedSkills: () => loadedSkills,
