@@ -167,7 +167,7 @@ export function createSkillMcpTool(options: CreateSkillMcpToolOptions): ToolDefi
           `MCP server "${args.mcp_name}" not found.\n\n` +
           `Available MCP servers in loaded skills:\n` +
           formatAvailableMcps(skills) + '\n\n' +
-          `Hint: Put the skill in a supported skills directory, then restart OpenCode.`
+          `Hint: Ensure the skill is located in a supported directory (.opencode/skills, .claude/skills, .agents/skills, ~/.config/opencode/skills, ~/.claude/skills, ~/.agents/skills), then restart OpenCode.`
         )
       }
 
