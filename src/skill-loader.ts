@@ -223,7 +223,7 @@ async function discoverNativeProjectSkills(): Promise<LoadedSkill[][]> {
 }
 
 /**
- * Discover all skills from both opencode locations
+ * Discover skills from all supported global and project roots
  * Priority: project > global
  */
 export async function discoverSkills(): Promise<LoadedSkill[]> {

@@ -101,7 +101,7 @@ describe('skill discovery', () => {
     expect(skills).toHaveLength(1)
     expect(skills[0]).toMatchObject({
       name: 'shared',
-      scope: 'opencode-project',
+      scope: 'claude-project',
       mcpConfig: {
         'project-mcp': {
           command: ['node', 'server.js']
