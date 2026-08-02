@@ -66,10 +66,10 @@ See [`.opencode/skills/playwright-example/SKILL.md`](.opencode/skills/playwright
 
 ## Usage
 
-The plugin does not replace OpenCode's native `skill` tool. It scans the same
-global and project skill roots (`.agents/skills`, `.claude/skills`, and
-`.opencode/skills`) to discover embedded MCP definitions, then exposes those
-servers through `skill_mcp`.
+The plugin does not replace OpenCode's native `skill` tool. It scans OpenCode's native skill roots to discover embedded MCP definitions, then exposes those servers through `skill_mcp`.
+
+Project roots: `.opencode/skills`, `.claude/skills`, `.agents/skills`
+Global roots: `~/.config/opencode/skills`, `~/.claude/skills`, `~/.agents/skills`
 
 ### 1. Create a Skill with Embedded MCP
 
