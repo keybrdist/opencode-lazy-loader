@@ -132,6 +132,13 @@ export function createSkillMcpManager(): SkillMcpManager {
     info: McpClientInfo,
     config: RemoteMcpServerConfig
   ): StreamableHTTPClientTransport => {
+    if (!config.url) {
+      throw new Error(
+        `MCP server "${info.serverName}" is missing a required "url" field.\n\n` +
+        `Remote servers must specify a valid HTTP or HTTPS URL.`
+      )
+    }
+
     let url: URL
     try {
       url = new URL(config.url)
@@ -139,6 +146,13 @@ export function createSkillMcpManager(): SkillMcpManager {
       throw new Error(
         `MCP server "${info.serverName}" has an invalid URL: ${config.url}\n\n` +
         `The URL must be a valid HTTP or HTTPS URL.`
+      )
+    }
+
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      throw new Error(
+        `MCP server "${info.serverName}" has an unsupported URL scheme: ${url.protocol}\n\n` +
+        `The URL must use the http: or https: scheme.`
       )
     }
 
