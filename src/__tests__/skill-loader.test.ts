@@ -18,7 +18,8 @@ import { OpenCodeEmbeddedSkillMcp } from '../index.js'
 import {
   discoverOpencodeGlobalSkills,
   discoverOpencodeProjectSkills,
-  discoverSkills
+  discoverSkills,
+  loadMcpJsonFromDir
 } from '../skill-loader.js'
 
 function skillMarkdown(name: string, serverName: string): string {
@@ -108,6 +109,68 @@ describe('skill discovery', () => {
         }
       }
     })
+  })
+
+  it('discovers remote MCP servers from skill frontmatter', async () => {
+    const skillDir = join(mockedHome.path, '.config', 'opencode', 'skills', 'remote-skill')
+    await mkdir(skillDir, { recursive: true })
+    await writeFile(
+      join(skillDir, 'SKILL.md'),
+      `---
+name: remote-skill
+description: Test skill
+mcp:
+  remote-server:
+    type: remote
+    url: https://mcp.example.com/mcp
+    headers:
+      Authorization: Bearer \${API_TOKEN}
+---
+
+# remote-skill
+`
+    )
+
+    const skills = await discoverOpencodeGlobalSkills()
+
+    expect(skills).toHaveLength(1)
+    expect(skills[0].mcpConfig).toMatchObject({
+      'remote-server': {
+        type: 'remote',
+        url: 'https://mcp.example.com/mcp',
+        headers: { Authorization: 'Bearer ${API_TOKEN}' }
+      }
+    })
+  })
+
+  it('loads direct-format mcp.json entries with remote configs', async () => {
+    const skillDir = join(temporaryRoot, 'remote-json-skill')
+    await mkdir(skillDir, { recursive: true })
+    await writeFile(
+      join(skillDir, 'mcp.json'),
+      JSON.stringify({
+        'remote-server': { type: 'remote', url: 'https://mcp.example.com/mcp' }
+      })
+    )
+
+    const config = await loadMcpJsonFromDir(skillDir)
+
+    expect(config).toEqual({
+      'remote-server': { type: 'remote', url: 'https://mcp.example.com/mcp' }
+    })
+  })
+
+  it('still ignores direct-format mcp.json entries with neither command nor remote type', async () => {
+    const skillDir = join(temporaryRoot, 'invalid-json-skill')
+    await mkdir(skillDir, { recursive: true })
+    await writeFile(
+      join(skillDir, 'mcp.json'),
+      JSON.stringify({ 'some-key': { unrelated: true } })
+    )
+
+    const config = await loadMcpJsonFromDir(skillDir)
+
+    expect(config).toBeUndefined()
   })
 
   it('registers skill_mcp without replacing OpenCode native skill tool', async () => {

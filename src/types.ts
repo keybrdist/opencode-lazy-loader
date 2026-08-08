@@ -1,5 +1,5 @@
 /**
- * Configuration for an MCP server
+ * Configuration for a local (stdio) MCP server
  *
  * Command formats:
  * 1. Array format: command: ["npx", "-y", "@some/mcp-server"]
@@ -10,13 +10,30 @@
  * 2. Array format (OpenCode): env: ["KEY=value"]
  * 3. Legacy field name: environment (same formats as env)
  */
-export interface McpServerConfig {
+export interface LocalMcpServerConfig {
+  type?: 'local'
   command?: string | string[]
   args?: string[]
   env?: Record<string, string> | string[]
   /** @deprecated Use `env` instead */
   environment?: Record<string, string> | string[]
 }
+
+/**
+ * Configuration for a remote MCP server (Streamable HTTP transport)
+ */
+export interface RemoteMcpServerConfig {
+  type: 'remote'
+  /** Remote MCP server URL (http or https) */
+  url: string
+  /** Custom headers to send with requests; values support ${VAR} expansion */
+  headers?: Record<string, string>
+}
+
+/**
+ * Unified MCP server configuration - local (stdio) or remote (Streamable HTTP)
+ */
+export type McpServerConfig = LocalMcpServerConfig | RemoteMcpServerConfig
 
 export interface NormalizedCommand {
   command: string

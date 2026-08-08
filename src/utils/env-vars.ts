@@ -77,6 +77,10 @@ export function createCleanMcpEnvironment(
 }
 
 export function normalizeCommand(config: McpServerConfig): NormalizedCommand {
+  if (config.type === 'remote') {
+    throw new Error('Invalid MCP command configuration: remote MCP servers do not use a command')
+  }
+
   if (Array.isArray(config.command)) {
     if (config.command.length === 0) {
       throw new Error('Invalid MCP command configuration: command array must not be empty')
@@ -96,6 +100,10 @@ export function normalizeCommand(config: McpServerConfig): NormalizedCommand {
 }
 
 export function normalizeEnv(config: McpServerConfig): NormalizedEnv {
+  if (config.type === 'remote') {
+    throw new Error('Invalid MCP env configuration: remote MCP servers do not use env vars')
+  }
+
   const envConfig = config.env ?? config.environment
   if (!envConfig) {
     return { env: {} }

@@ -106,6 +106,17 @@ describe('normalizeCommand', () => {
       )
     })
 
+    it('throws error for remote MCP configs', () => {
+      const config: McpServerConfig = {
+        type: 'remote',
+        url: 'https://mcp.example.com/mcp'
+      }
+
+      expect(() => normalizeCommand(config)).toThrow(
+        'Invalid MCP command configuration: remote MCP servers do not use a command'
+      )
+    })
+
     it('ignores args field when command is array (OpenCode format takes precedence)', () => {
       const config: McpServerConfig = {
         command: ['npx', '-y', '@some/package'],
@@ -222,6 +233,17 @@ describe('normalizeEnv', () => {
       const result = normalizeEnv(config)
 
       expect(result.env).toEqual({})
+    })
+
+    it('throws error for remote MCP configs', () => {
+      const config: McpServerConfig = {
+        type: 'remote',
+        url: 'https://mcp.example.com/mcp'
+      }
+
+      expect(() => normalizeEnv(config)).toThrow(
+        'Invalid MCP env configuration: remote MCP servers do not use env vars'
+      )
     })
   })
 
