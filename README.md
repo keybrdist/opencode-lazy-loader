@@ -146,16 +146,23 @@ Invokes an operation on a skill-embedded MCP server.
 
 ## Configuration Format
 
-The MCP configuration supports multiple formats for compatibility with both OpenCode and oh-my-opencode:
+The MCP configuration supports multiple formats for compatibility with both OpenCode and oh-my-opencode. Servers can be **local** (spawned via stdio) or **remote** (Streamable HTTP):
 
 ```typescript
-interface McpServerConfig {
+interface LocalMcpServerConfig {
+  type?: "local"               // Optional; local is the default
   // Command formats (both supported):
   command: string | string[]   // Array: ["npx", "-y", "@some/mcp"] or String: "npx"
   args?: string[]              // Used with string command: ["-y", "@some/mcp"]
   
   // Environment variable formats (both supported):
   env?: Record<string, string> | string[]  // Object: { "KEY": "val" } or Array: ["KEY=val"]
+}
+
+interface RemoteMcpServerConfig {
+  type: "remote"
+  url: string                       // Remote MCP server URL (Streamable HTTP)
+  headers?: Record<string, string>  // Optional headers, e.g. auth; supports ${VAR} expansion
 }
 ```
 
@@ -181,6 +188,19 @@ interface McpServerConfig {
   "my-server": {
     "command": ["npx", "-y", "@some/mcp-server"],
     "env": ["API_KEY=${MY_API_KEY}", "DEBUG=true"]
+  }
+}
+```
+
+**Remote MCP server (Streamable HTTP):**
+```json
+{
+  "my-remote-server": {
+    "type": "remote",
+    "url": "https://mcp.example.com/mcp",
+    "headers": {
+      "Authorization": "Bearer ${MY_API_TOKEN}"
+    }
   }
 }
 ```
